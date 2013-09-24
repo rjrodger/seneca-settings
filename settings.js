@@ -2,8 +2,9 @@
 "use strict";
 
 
-var _     = require('underscore')
-var async = require('async')
+var _       = require('underscore')
+var async   = require('async')
+var connect = require('connect')
 
 
 
@@ -33,11 +34,21 @@ module.exports = function( options ) {
   // actions provided
   seneca.add( {role:plugin, cmd:'load'},     
               {user:'object$'}, 
-              load_settings )
+              cmd_load_settings )
 
   seneca.add( {role:plugin, cmd:'save'},     
               {user:'object$'}, 
-              save_settings )
+              cmd_save_settings )
+
+
+  seneca.add( {role:plugin, cmd:'define_spec'},     
+              {kind:'string$,required$',spec:'object$,required$'}, 
+              cmd_define_spec )
+
+
+  seneca.add( {role:plugin, cmd:'spec'},     
+              {kind:'string$,required$'}, 
+              cmd_spec )
 
 
 
@@ -50,7 +61,6 @@ module.exports = function( options ) {
       user: userent,
     }
   })
-
   
 
 
@@ -65,7 +75,7 @@ module.exports = function( options ) {
   }
 
 
-  function load_settings( args, done ) {
+  function cmd_load_settings( args, done ) {
     settingsent.load$({kind:'user',user:args.user.id}, function( err, settings ){
       if( err ) return done(err);
       var data = (settings && settings.data) || options.default_data
@@ -74,7 +84,7 @@ module.exports = function( options ) {
   }
 
 
-  function save_settings( args, done ) {
+  function cmd_save_settings( args, done ) {
     settingsent.load$({kind:'user',user:args.user.id}, function( err, settings ){
       if( err ) return done(err);
       
@@ -91,6 +101,37 @@ module.exports = function( options ) {
   }
 
 
+  function cmd_define_spec( args, done ) {
+    // NOTE: spec field stores kind, top level kind == 'spec', as these are a type of setting
+    settingsent.load$({kind:'spec',spec:args.kind}, function( err, settings ){
+      if( err ) return done(err);
+
+      if( !settings ) {
+        settings = settingsent.make$( {kind:'spec',spec:args.kind,data:args.spec} )
+      }
+      else {
+        settings.data = _.extend( settings.data, args.spec ) 
+      }
+
+      settings.save$( function(err,settings){
+        if( err ) return done(err);
+
+        done( null, {ok:true, kind:args.kind, spec:settings.data})
+      })
+    })
+  }
+
+
+  function cmd_spec( args, done ) {
+    settingsent.load$( {kind:'spec', spec:args.kind}, function(err,settings){
+      if( err ) return done(err);
+
+      if( !settings ) return done(null,{ok:false});
+      done(null,{ok:true, kind:args.kind, spec:settings.data})
+    })
+  }
+
+
 
   function buildcontext( req, res, args, act, respond ) {
     var user = req.seneca && req.seneca.user
@@ -102,17 +143,36 @@ module.exports = function( options ) {
   }
 
 
+  var app = connect()
+  app.use(connect.static(__dirname+'/web'))
+
 
   // web interface
   seneca.act_if(options.web, {role:'web', use:{
     prefix:options.prefix,
     pin:{role:plugin,cmd:'*'},
     map:{
+      spec: { GET:buildcontext },
       load: { GET:buildcontext },
-      save: { POST:buildcontext }
+      save: { POST:buildcontext, data:true }
     },
+
+    
     endware: function( req, res, next ) {
-      
+      if( 0 != req.url.indexOf(options.prefix) ) return next();
+
+      req = _.clone(req)
+      req.url = req.url.substring(options.prefix.length)
+
+
+      if(''===req.url) {
+        res.writeHead(301, {
+          'Location': options.prefix+'/'
+        })
+        return res.end()
+      }
+
+      return app(req,res,next)
     }
   }})
 

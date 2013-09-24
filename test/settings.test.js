@@ -83,4 +83,34 @@ describe('settings', function() {
     })
   })
 
+
+  it('define-spec', function(){
+    async.series({
+      define: function(cb){
+        settingspin.define_spec({kind:'foo',spec:{q:3}}, function(err,out){
+          assert.isNull(err)
+          assert.isNotNull(out)
+          assert.ok(out.ok)
+          assert.equal( 'foo', out.kind )
+          assert.equal( 3, out.spec.q )
+
+          cb()
+        })
+      },
+
+      get: function(cb){
+        settingspin.spec({kind:'foo'}, function(err,out){
+          assert.isNull(err)
+          assert.isNotNull(out)
+          assert.ok(out.ok)
+          assert.equal( 'foo', out.kind )
+          assert.equal( 3, out.spec.q )
+
+          cb()
+        })
+      }
+    })
+  })
+
 })
+
