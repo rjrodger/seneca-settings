@@ -52,3 +52,28 @@ senecaSettingsModule.directive('senecaSettings', ['senecaSettingsAPI', function 
 }])
 
 }(window, angular));
+
+
+/*
+
+Settings Types:
+
+- single line text
+- multi-line text
+- email
+- small number
+- phone number
+- time
+- date
+- date+time
+- yes/no (buttons)
+- on/off (like ios)
+- tickbox (all these are the same thing, but different visually)
+- pre-defined selection, buttons
+- pre-defined selection, drop-down
+- pre-defined selection, drop-down, or user provides text
+- slider
+- color
+- star rating
+
+*/

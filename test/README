@@ -1,0 +1,13 @@
+
+to run:
+
+node web-app.js
+
+open http://localhost:8888/settings/
+
+database dump: http://localhost:8888/mem-store/dump
+
+
+see also: http://senecajs.org/
+
+
