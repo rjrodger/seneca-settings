@@ -1,0 +1,16 @@
+<b>{{kind}} settings</b><br>
+
+<div ng-controller="Settings">
+<div ng-repeat="(setting_name, setting_info) in spec">
+    <div ng-switch on=setting_info['type']>
+        <div ng-switch-when="text">
+            <label>{{ setting_info['nice'] }}</label> <input type="text" ng-model="settings[setting_name]" /> <span>{{ setting_info['help'] }}</span>
+        </div>
+        <div ng-switch-default>
+            NEED TO IMPLEMENT SWITCH OPTION FOR {{ setting_info['type'] }}
+        </div>
+    </div>
+</div>
+
+<button class="btn btn-primary" ng-click="update_settings()" type="submit">Update</button>
+</div>
