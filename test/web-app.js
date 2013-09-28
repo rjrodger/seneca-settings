@@ -8,6 +8,8 @@ var app    = connect()
 
 
 app.use( connect.query() )
+app.use( connect.json() )
+
 
 seneca.use('mem-store',{web:{dump:true}})
 seneca.use('user')
