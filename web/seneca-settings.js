@@ -45,23 +45,29 @@ senecaSettingsModule.directive('senecaSettings', ['senecaSettingsAPI', function 
             scope.settings = settings
           });
         })
-      })
+      });
     },
-    templateUrl: "_settings_template.html"
+    templateUrl: "/settings/_settings_template.html"
   }
   return def
 }])
 
-senecaSettingsModule.controller("Settings", ["$scope", 'senecaSettingsAPI', function($scope, senecaSettingsAPI) {
-    // If define_spec were enabled via the API, could initialize the spec here
-    // based on data specified in web/index.html <script> block.
-
+senecaSettingsModule.controller("Settings", ["$scope", "$timeout", 'senecaSettingsAPI', function($scope, $timeout, senecaSettingsAPI) {
     $scope.update_settings = function() {
         senecaSettingsAPI.save($scope.kind, $scope.settings, function (out) {
-            console.log("response of update_settings:");
-            console.log(out);
+            $scope.status_message = "Settings updated successfully.";
+            $scope.status_class = "notice";
+
+            // Clear status message after a few seconds.
+            $timeout(function() {
+                $scope.status_message = "";
+                $scope.status_class = "";
+            }, 3000);
         });
     }
+
+    $scope.status_message = "";
+    $scope.status_class = "";
 }]);
 
 }(window, angular));
