@@ -56,7 +56,7 @@ senecaSettingsModule.controller("Settings", ["$scope", "$timeout", 'senecaSettin
     $scope.update_settings = function() {
         senecaSettingsAPI.save($scope.kind, $scope.settings, function (out) {
             $scope.status_message = "Settings updated successfully.";
-            $scope.status_class = "notice";
+            $scope.status_class = "alert-success";
 
             // Clear status message after a few seconds.
             $timeout(function() {
