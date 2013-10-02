@@ -42,6 +42,13 @@ senecaSettingsModule.directive('senecaSettings', ['senecaSettingsAPI', function 
           scope.spec = spec
 
           senecaSettingsAPI.load(kind, function(settings){
+            for (var setting_name in spec) {
+                var default_value = spec[setting_name]['default'];
+                if (default_value != undefined && settings[setting_name] == undefined) {
+                    console.log("using default for " + setting_name + " " + spec[setting_name]['default'])
+                    settings[setting_name] = default_value
+                }
+            }
             scope.settings = settings
           });
         })
@@ -79,12 +86,12 @@ senecaSettingsModule.controller("Settings", ["$scope", "$timeout", 'senecaSettin
     }
 
     $scope.rating_class = function(setting_name, a, n) {
-        var star_rating = n - a;
-        var user_rating = $scope.settings[setting_name]
-        if (star_rating <= user_rating) {
-            return "star-active";
-        } else {
-            return "";
+        if ($scope.settings) {
+            var star_rating = n - a;
+            var user_rating = $scope.settings[setting_name]
+            if (star_rating <= user_rating) {
+                return "star-active";
+            }
         }
     }
 }]);
