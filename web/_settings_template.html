@@ -22,13 +22,8 @@
                 <input type="range" ng-model="settings[setting_name]" id="setting-{{ setting_name }}" /> 
             </span>
             <span ng-switch-when="rating">
-                TODO implement star ratings...
                 <span class="rating">
-                    <span>&#9734;</span>
-                    <span>&#9734;</span>
-                    <span>&#9734;</span>
-                    <span>&#9734;</span>
-                    <span>&#9734;</span>
+                    <span class="star {{ rating_class(setting_name, $index, 5) }}" ng-repeat="a in range(5) track by $index" ng-click="update_rating(setting_name, $index, 5)"></span>
                 </span>
             </span>
             <span ng-switch-when="selectbuttons">

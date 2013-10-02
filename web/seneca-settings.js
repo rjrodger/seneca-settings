@@ -68,6 +68,25 @@ senecaSettingsModule.controller("Settings", ["$scope", "$timeout", 'senecaSettin
 
     $scope.status_message = "";
     $scope.status_class = "";
+
+    $scope.range = function(n) {
+        return new Array(n);
+    };
+
+    $scope.update_rating = function(setting_name, a, n) {
+        var star_rating = n - a;
+        $scope.settings[setting_name] = star_rating;
+    }
+
+    $scope.rating_class = function(setting_name, a, n) {
+        var star_rating = n - a;
+        var user_rating = $scope.settings[setting_name]
+        if (star_rating <= user_rating) {
+            return "star-active";
+        } else {
+            return "";
+        }
+    }
 }]);
 
 }(window, angular));
