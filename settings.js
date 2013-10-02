@@ -103,22 +103,26 @@ module.exports = function( options ) {
 
   var valid_setting_types = {
       "text" : "Single line text.",
-      "longtext" : "Multi line text.",
       "email" : "Email address.",
-      "phone" : "Phone number.",
+      "tel" : "Phone number.",
       "number" : "Small numeric value.",
       "time" : "Time.",
       "date" : "Date.",
       "datetime" : "Date with time.",
+      "color" : "Color.",
+      "url" : "A url.",
+      "checkbox" : "A checkbox.",
+      "range" : "Range/slider.",
+
+      "rating" : "Star rating.",
       "yesno" : "Yes or no buttons.",
       "onoff" : "An on/off slider.",
-      "tickbox" : "A checkbox.",
+
       "selectbuttons" : "Pre-defined selection, chosen by buttons.",
       "selectdropdown" : "Pre-defined selection, chosen by drop-down.",
       "selectdropdownplus" : "Pre-defined selection, chosen by drop-down, with option for user-provided text.",
-      "slider" : "Slider.",
-      "color" : "Color.",
-      "rating" : "Star rating."
+
+      "longtext" : "Multi line text."
   }
 
   function validate_spec(spec) {

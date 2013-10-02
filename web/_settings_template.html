@@ -1,16 +1,73 @@
-<b>{{kind}} settings</b><br>
-
 <div ng-controller="Settings">
-<div ng-repeat="(setting_name, setting_info) in spec">
-    <div ng-switch on=setting_info['type']>
-        <div ng-switch-when="text">
-            <label>{{ setting_info['nice'] }}</label> <input type="text" ng-model="settings[setting_name]" /> <span>{{ setting_info['help'] }}</span>
-        </div>
-        <div ng-switch-default>
-            NEED TO IMPLEMENT SWITCH OPTION FOR {{ setting_info['type'] }}
+    <div ng-repeat="(setting_name, setting_info) in spec">
+        <div ng-switch on=setting_info['type']>
+            <div ng-switch-when="longtext">
+                <label>{{ setting_info['nice'] }}</label> <textarea ng-model="settings[setting_name]" /> <span>{{ setting_info['help'] }}</span>
+            </div>
+            <div ng-switch-when="yesno">
+                <label>{{ setting_info['nice'] }}</label> 
+                <input type="radio" ng-model="settings[setting_name]" value="1"> Yes
+                <input type="radio" ng-model="settings[setting_name]" value="0"> No
+                <span>{{ setting_info['help'] }}</span>
+            </div>
+            <div ng-switch-when="onoff">
+                <label>{{ setting_info['nice'] }}</label> 
+                <span ng-if="settings[setting_name]">ON</span>
+                <span ng-if="1-settings[setting_name]">OFF</span>
+                <input type="range" min=0 max=1 step=1 ng-model="settings[setting_name]" id="setting-{{ settings[setting_name] }}" /> 
+                <span>{{ setting_info['help'] }}</span>
+            </div>
+            <div ng-switch-when="range">
+                <label>{{ setting_info['nice'] }}</label> 
+                {{ settings[setting_name] }}
+                <input type="range" ng-model="settings[setting_name]" id="setting-{{ settings[setting_name] }}" /> 
+                <span>{{ setting_info['help'] }}</span>
+            </div>
+            <div ng-switch-when="rating">
+                <label for="setting-{{settings[setting_name]}}">{{ setting_info['nice'] }}</label>
+                TODO implement star ratings...
+                <span class="rating">
+                    <span>&#9734;</span>
+                    <span>&#9734;</span>
+                    <span>&#9734;</span>
+                    <span>&#9734;</span>
+                    <span>&#9734;</span>
+                </span>
+                <span>{{ setting_info['help'] }}</span>
+            </div>
+            <div ng-switch-when="selectbuttons">
+                <label>{{ setting_info['nice'] }}</label> 
+                <span ng-repeat="opt in setting_info['options']">
+                    <input type="radio" ng-model="settings[setting_name]" value="{{ opt }}" />
+                    {{ opt }}
+                </span>
+                <span>{{ setting_info['help'] }}</span>
+            </div>
+            <div ng-switch-when="selectdropdown">
+                <label>{{ setting_info['nice'] }}</label> 
+                {{ settings[setting_name] }}
+                <select ng-model="settings[setting_name]">
+                    <option ng-repeat="opt in setting_info['options']" value="{{ opt }}">{{ opt }}</option>
+                </select>
+                <span>{{ setting_info['help'] }}</span>
+            </div>
+            <div ng-switch-when="selectdropdownplus">
+                <label>{{ setting_info['nice'] }}</label> 
+                <input type="text" ng-model="settings[setting_name]" />
+                <select ng-model="settings[setting_name]">
+                    <option ng-repeat="opt in setting_info['options']" value="{{ opt }}">{{ opt }}</option>
+                </select>
+                <span>{{ setting_info['help'] }}</span>
+            </div>
+            <div ng-switch-default>
+                <!-- Default is used for any elements which correspond neatly to HTML input types -->
+                <!-- text, email. tel, number, time, date, datetime, color, url, checkbox -->
+                <label for="setting-{{settings[setting_name]}}">{{ setting_info['nice'] }}</label> <input type="{{ setting_info['type'] }}" ng-model="settings[setting_name]" id="setting-{{ settings[setting_name] }}" /> <span>{{ setting_info['help'] }}</span>
+            </div>
         </div>
     </div>
-</div>
 
-<button class="btn btn-primary" ng-click="update_settings()" type="submit">Update</button>
+    <p class="{{ status_class }}">{{ status_message }}</p>
+
+    <button class="btn btn-primary" ng-click="update_settings()" type="submit">Update Settings</button>
 </div>
