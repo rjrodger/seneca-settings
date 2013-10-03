@@ -17,6 +17,10 @@
     "plugin"
   ],
   "author": "Richard Rodger (http://richardrodger.com)",
+  "contributors": [
+    "Richard Rodger (http://richardrodger.com/)",
+    "Ana Nelson (http://ananelson.com/)"
+  ],
   "license": "MIT",
   "dependencies": {
     "underscore": "~1.5.2",
@@ -32,6 +36,8 @@
   "files": [
     "README.md",
     "LICENSE.txt",
-    "settings.js"
+    "settings.js",
+    "web/seneca-settings.js",
+    "web/_settings_template.html"
   ]
 }

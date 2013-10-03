@@ -3,6 +3,7 @@
 
 // mocha settings.test.js
 
+var util = require('util')
 
 var seneca  = require('seneca')
 
@@ -87,12 +88,12 @@ describe('settings', function() {
   it('define-spec', function(){
     async.series({
       define: function(cb){
-        settingspin.define_spec({kind:'foo',spec:{q:3}}, function(err,out){
+        settingspin.define_spec({kind:'foo',spec:{q:{type:'number'}}}, function(err,out){
           assert.isNull(err)
           assert.isNotNull(out)
           assert.ok(out.ok)
           assert.equal( 'foo', out.kind )
-          assert.equal( 3, out.spec.q )
+          assert.equal( "{ type: 'number' }", util.inspect(out.spec.q) )
 
           cb()
         })
@@ -104,7 +105,7 @@ describe('settings', function() {
           assert.isNotNull(out)
           assert.ok(out.ok)
           assert.equal( 'foo', out.kind )
-          assert.equal( 3, out.spec.q )
+          assert.equal( "{ type: 'number' }", util.inspect(out.spec.q) )
 
           cb()
         })

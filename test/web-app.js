@@ -22,12 +22,13 @@ seneca.use(function(){
 seneca.use('..')
 
 seneca.ready( function(err){
-  if( err ) process.exit( console.error(err) && 1 );
+  if( err ) return process.exit( !console.error(err) );
 
   seneca.act('role:user, cmd:register, nick:n1', function(err,out){
-    if( err ) process.exit( console.error(err) && 1 );
+    if( err ) return process.exit( !console.error(err) );
 
-    seneca.act('role:settings, cmd:define_spec, kind:user, spec:{foo:{"type":"text", "nice":"Foo Setting", "help":"Provides the foo setting."}, bar:{"type":"text", "nice":"Bar Setting", "help" : "Provides the bar setting."}}')
+    seneca.act('role:settings, cmd:define_spec, kind:user, spec:{foo:{type:text, nice:"Foo Setting", help:"Provides the foo setting."}, bar:{type:text, nice:"Bar Setting", help: "Provides the bar setting."}}')
+
     seneca.act('role:settings, cmd:save, kind:user, data:{foo:"aaa"}, user:"'+out.user.id+'"')
 
     app.use( function(req,res,next){

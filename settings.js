@@ -125,16 +125,16 @@ module.exports = function( options ) {
       "longtext" : "Multi line text."
   }
 
+
   function validate_spec(spec) {
-      for (var spec_name in spec) {
-          var spec_type = spec[spec_name]['type'];
-          if (!valid_setting_types.hasOwnProperty(spec_type)) {
-              throw "invalid type '" + spec_type + "' for setting " + spec_name;
-          } else {
-              console.log("spec type " + spec_type + " is valid: " + valid_setting_types[spec_type]);
-          }
+    for (var spec_name in spec) {
+      var spec_type = spec[spec_name]['type'];
+      if (!valid_setting_types.hasOwnProperty(spec_type)) {
+        throw "invalid type '" + spec_type + "' for setting " + spec_name;
       }
+    }
   }
+
 
   /// "cmd_define_spec"
   function cmd_define_spec( args, done ) {
