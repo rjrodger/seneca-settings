@@ -31,28 +31,28 @@ module.exports = function( options ) {
   var userent     = seneca.make$( 'sys/user' )
 
 
-  // actions provided
+  /// "load-command"
   seneca.add( {role:plugin, cmd:'load'},     
               {user:'object$'}, 
               cmd_load_settings )
 
+  /// "save-command"
   seneca.add( {role:plugin, cmd:'save'},     
               {user:'object$'}, 
               cmd_save_settings )
 
-
+  /// "define-spec-command"
   seneca.add( {role:plugin, cmd:'define_spec'},     
               {kind:'string$,required$',spec:'object$,required$'}, 
               cmd_define_spec )
 
 
+  /// "spec-command"
   seneca.add( {role:plugin, cmd:'spec'},     
               {kind:'string$,required$'}, 
               cmd_spec )
 
-
-
-  // resolve entity args by id
+  /// "resolve-args"
   seneca.act({
     role:   'util',
     cmd:    'ensure_entity',
@@ -74,7 +74,7 @@ module.exports = function( options ) {
     return out
   }
 
-
+  /// "cmd_load_settings"
   function cmd_load_settings( args, done ) {
     settingsent.load$({kind:'user',user:args.user.id}, function( err, settings ){
       if( err ) return done(err);
@@ -84,6 +84,7 @@ module.exports = function( options ) {
   }
 
 
+  /// "cmd_save_settings"
   function cmd_save_settings( args, done ) {
     settingsent.load$({kind:'user',user:args.user.id}, function( err, settings ){
       if( err ) return done(err);
@@ -100,8 +101,45 @@ module.exports = function( options ) {
     })
   }
 
+  var valid_setting_types = {
+      "text" : "Single line text.",
+      "email" : "Email address.",
+      "tel" : "Phone number.",
+      "number" : "Small numeric value.",
+      "time" : "Time.",
+      "date" : "Date.",
+      "datetime" : "Date with time.",
+      "color" : "Color.",
+      "url" : "A url.",
+      "checkbox" : "A checkbox.",
+      "range" : "Range/slider.",
 
+      "rating" : "Star rating.",
+      "yesno" : "Yes or no buttons.",
+      "onoff" : "An on/off slider.",
+
+      "selectbuttons" : "Pre-defined selection, chosen by buttons.",
+      "selectdropdown" : "Pre-defined selection, chosen by drop-down.",
+      "selectdropdownplus" : "Pre-defined selection, chosen by drop-down, with option for user-provided text.",
+
+      "longtext" : "Multi line text."
+  }
+
+  function validate_spec(spec) {
+      for (var spec_name in spec) {
+          var spec_type = spec[spec_name]['type'];
+          if (!valid_setting_types.hasOwnProperty(spec_type)) {
+              throw "invalid type '" + spec_type + "' for setting " + spec_name;
+          } else {
+              console.log("spec type " + spec_type + " is valid: " + valid_setting_types[spec_type]);
+          }
+      }
+  }
+
+  /// "cmd_define_spec"
   function cmd_define_spec( args, done ) {
+    validate_spec(args.spec);
+
     // NOTE: spec field stores kind, top level kind == 'spec', as these are a type of setting
     settingsent.load$({kind:'spec',spec:args.kind}, function( err, settings ){
       if( err ) return done(err);
@@ -115,13 +153,12 @@ module.exports = function( options ) {
 
       settings.save$( function(err,settings){
         if( err ) return done(err);
-
         done( null, {ok:true, kind:args.kind, spec:settings.data})
       })
     })
   }
 
-
+  /// "cmd_spec"
   function cmd_spec( args, done ) {
     settingsent.load$( {kind:'spec', spec:args.kind}, function(err,settings){
       if( err ) return done(err);
@@ -131,8 +168,7 @@ module.exports = function( options ) {
     })
   }
 
-
-
+  /// "buildcontext"
   function buildcontext( req, res, args, act, respond ) {
     var user = req.seneca && req.seneca.user
     if( user ) {
@@ -143,21 +179,24 @@ module.exports = function( options ) {
   }
 
 
+  /// "connect"
   var app = connect()
   app.use(connect.static(__dirname+'/web'))
 
 
-  // web interface
+  /// "web-interface"
   seneca.act_if(options.web, {role:'web', use:{
     prefix:options.prefix,
     pin:{role:plugin,cmd:'*'},
+
+    /// "map"
     map:{
       spec: { GET:buildcontext },
       load: { GET:buildcontext },
       save: { POST:buildcontext, data:true }
     },
 
-    
+    /// @end
     endware: function( req, res, next ) {
       if( 0 != req.url.indexOf(options.prefix) ) return next();
 
@@ -175,6 +214,7 @@ module.exports = function( options ) {
       return app(req,res,next)
     }
   }})
+  /// @end
 
 
 
