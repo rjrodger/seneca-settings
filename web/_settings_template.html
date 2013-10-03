@@ -1,4 +1,5 @@
 <div ng-controller="Settings">
+    <form id="seneca-settings-form">
     <table id="seneca-settings">
         <tr ng-repeat="(setting_name, setting_info) in spec">
         <td><label for="setting-{{ setting_name }}">{{ setting_info['nice'] }}</label></td>
@@ -23,7 +24,12 @@
             </span>
             <span ng-switch-when="rating">
                 <span class="rating">
-                    <span class="star {{ rating_class(setting_name, $index, 5) }}" ng-repeat="a in range(5) track by $index" ng-click="update_rating(setting_name, $index, 5)"></span>
+                    <span
+                        id="setting-{{ setting_name }}-star-{{ setting_info['stars']-$index }}"
+                        class="star {{ rating_class(setting_name, $index, setting_info['stars']) }}"
+                        ng-repeat="a in range(setting_info['stars']) track by $index"
+                        ng-click="update_rating(setting_name, $index, setting_info['stars'])">
+                    </span>
                 </span>
             </span>
             <span ng-switch-when="selectbuttons">
@@ -54,5 +60,6 @@
 
     <div class="alert {{ status_class }}">{{ status_message }}</div>
 
-    <button class="btn btn-primary" ng-click="update_settings()" type="submit">Update Settings</button>
+    <a class="btn btn-primary" ng-click="update_settings()" type="submit">Update Settings</a>
+</form>
 </div>

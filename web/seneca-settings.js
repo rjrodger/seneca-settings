@@ -43,12 +43,23 @@ senecaSettingsModule.directive('senecaSettings', ['senecaSettingsAPI', function 
 
           senecaSettingsAPI.load(kind, function(settings){
             for (var setting_name in spec) {
-                var default_value = spec[setting_name]['default'];
+                var setting_info = spec[setting_name];
+
+                // apply default values
+                var default_value = setting_info['default'];
                 if (default_value != undefined && settings[setting_name] == undefined) {
-                    console.log("using default for " + setting_name + " " + spec[setting_name]['default'])
-                    settings[setting_name] = default_value
+                    console.log("using default for " + setting_name + " " + spec[setting_name]['default']);
+                    settings[setting_name] = default_value;
+                }
+
+                // ensure ratings have a 'star' property
+                if (setting_info['type'] == 'rating') {
+                    if (setting_info['stars'] == undefined) {
+                        setting_info['stars'] = 5;
+                    }
                 }
             }
+
             scope.settings = settings
           });
         })
