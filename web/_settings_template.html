@@ -1,0 +1,65 @@
+<div ng-controller="Settings">
+    <form id="seneca-settings-form">
+    <table id="seneca-settings">
+        <tr ng-repeat="(setting_name, setting_info) in spec">
+        <td><label for="setting-{{ setting_name }}">{{ setting_info['nice'] }}</label></td>
+        <td ng-switch on=setting_info['type']>
+            <span ng-switch-when="longtext">
+                <textarea ng-model="settings[setting_name]" id="setting-{{ setting_name }}" /> 
+            </span>
+            <span ng-switch-when="yesno">
+                <input type="radio" ng-model="settings[setting_name]" value="1" id="setting-{{ setting_name }}-yes">
+                <label for="setting-{{ setting_name }}-yes">Yes</label>
+                <input type="radio" ng-model="settings[setting_name]" value="0" id="setting-{{ setting_name }}-no">
+                <label for="setting-{{ setting_name }}-no">No</label>
+            </span>
+            <span ng-switch-when="onoff" id="setting-{{ setting_name }}">
+                <span ng-if="1-settings[setting_name]">OFF</span>
+                <input type="range" min=0 max=1 step=1 ng-model="settings[setting_name]" />
+                <span ng-if="settings[setting_name]">ON</span>
+            </span>
+            <span ng-switch-when="range">
+                {{ settings[setting_name] }}
+                <input type="range" ng-model="settings[setting_name]" id="setting-{{ setting_name }}" /> 
+            </span>
+            <span ng-switch-when="rating">
+                <span class="rating">
+                    <span
+                        id="setting-{{ setting_name }}-star-{{ setting_info['stars']-$index }}"
+                        class="star {{ rating_class(setting_name, $index, setting_info['stars']) }}"
+                        ng-repeat="a in range(setting_info['stars']) track by $index"
+                        ng-click="update_rating(setting_name, $index, setting_info['stars'])">
+                    </span>
+                </span>
+            </span>
+            <span ng-switch-when="selectbuttons">
+                <span ng-repeat="opt in setting_info['options']">
+                    <input type="radio" ng-model="settings[setting_name]" value="{{ opt }}" id="setting-{{ setting_name }}-option-{{ opt }}" />
+                    <label for="setting-{{ setting_name }}-option-{{ opt }}">{{ opt }}</label>
+                </span>
+            </span>
+            <span ng-switch-when="selectdropdown">
+                <select ng-model="settings[setting_name]">
+                    <option ng-repeat="opt in setting_info['options']" value="{{ opt }}">{{ opt }}</option>
+                </select>
+            </span>
+            <span ng-switch-when="selectdropdownplus">
+                <input type="text" ng-model="settings[setting_name]" />
+                <select ng-model="settings[setting_name]">
+                    <option ng-repeat="opt in setting_info['options']" value="{{ opt }}">{{ opt }}</option>
+                </select>
+            </span>
+            <span ng-switch-default>
+                <!-- This default content is used for any elements which correspond neatly to HTML input types -->
+                <!-- text, email. tel, number, time, date, datetime, color, url, checkbox -->
+                <input type="{{ setting_info['type'] }}" ng-model="settings[setting_name]" id="setting-{{ setting_name }}" />
+            </span>
+            <td>{{ setting_info['help'] }}</td>
+        </tr>
+    </table>
+
+    <div class="alert {{ status_class }}">{{ status_message }}</div>
+
+    <a class="btn btn-primary" ng-click="update_settings()" type="submit">Update Settings</a>
+</form>
+</div>
