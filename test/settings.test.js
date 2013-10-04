@@ -51,7 +51,7 @@ describe('settings', function() {
       },
 
       default_settings: function(cb){
-        settingspin.load({user:tmp.n1},cberr(function(out){
+        settingspin.load({kind:'user',ref:tmp.n1},cberr(function(out){
           assert.equal( 1, out.settings.a )
 
           cb()
@@ -60,7 +60,7 @@ describe('settings', function() {
 
 
       save_settings: function(cb){
-        settingspin.save({user:tmp.n1,data:{b:2}},cberr(function(out){
+        settingspin.save({kind:'user',ref:tmp.n1,settings:{b:2}},cberr(function(out){
           assert.isNotNull(out)
           assert.equal( 1, out.settings.a )
           assert.equal( 2, out.settings.b )
@@ -71,7 +71,7 @@ describe('settings', function() {
 
 
       load_settings: function(cb){
-        settingspin.load({user:tmp.n1},cberr(function(out){
+        settingspin.load({kind:'user',ref:tmp.n1},cberr(function(out){
           assert.isNotNull(out)
           assert.equal( 1, out.settings.a )
           assert.equal( 2, out.settings.b )

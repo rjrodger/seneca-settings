@@ -48,7 +48,6 @@
                 // apply default values
                 var default_value = setting_info['default'];
                 if (default_value != undefined && settings[setting_name] == undefined) {
-                  //console.log("using default for " + setting_name + " " + spec[setting_name]['default']);
                   settings[setting_name] = default_value;
                 }
 
@@ -72,6 +71,7 @@
 
   senecaSettingsModule.controller("Settings", ["$scope", "$timeout", 'senecaSettingsAPI', function($scope, $timeout, senecaSettingsAPI) {
     $scope.update_settings = function() {
+
       senecaSettingsAPI.save($scope.kind, $scope.settings, function (out) {
         $scope.status_message = "Settings updated successfully.";
         $scope.status_class = "alert-success";
@@ -104,6 +104,11 @@
           return "star-active";
         }
       }
+    }
+
+    $scope.update_buttons = function(setting_name,opt) {
+      $scope.settings[setting_name] = ($scope.settings[setting_name]||{})
+      $scope.settings[setting_name][opt] = !$scope.settings[setting_name][opt]
     }
   }]);
 

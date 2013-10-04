@@ -2,6 +2,8 @@
 "use strict";
 
 
+var util = require('util')
+
 var _       = require('underscore')
 var async   = require('async')
 var connect = require('connect')
@@ -33,23 +35,22 @@ module.exports = function( options ) {
 
   /// "load-command"
   seneca.add( {role:plugin, cmd:'load'},     
-              {user:'object$'}, 
+              {required$:['ref','kind'], kind:{string$:true}},
               cmd_load_settings )
 
   /// "save-command"
   seneca.add( {role:plugin, cmd:'save'},     
-              {user:'object$'}, 
+              {required$:['ref','kind'], kind:{string$:true}},
               cmd_save_settings )
 
   /// "define-spec-command"
   seneca.add( {role:plugin, cmd:'define_spec'},     
-              {kind:'string$,required$',spec:'object$,required$'}, 
+              {required$:['kind'], kind:{string$:true}},
               cmd_define_spec )
-
 
   /// "spec-command"
   seneca.add( {role:plugin, cmd:'spec'},     
-              {kind:'string$,required$'}, 
+              {required$:['kind'], kind:{string$:true}},
               cmd_spec )
 
   /// "resolve-args"
@@ -69,16 +70,18 @@ module.exports = function( options ) {
 
     var out = settings.data$()
     delete out.id
-    delete out.user
+    delete out.ref
 
     return out
   }
 
+
   /// "cmd_load_settings"
   function cmd_load_settings( args, done ) {
-    settingsent.load$({kind:'user',user:args.user.id}, function( err, settings ){
+    settingsent.load$( {kind:args.kind, ref:args.ref}, function( err, settings ) {
       if( err ) return done(err);
-      var data = (settings && settings.data) || options.default_data
+
+      var data = (settings && settings.settings) || options.default_data
       done( null, { ok:true, settings: data } )
     })
   }
@@ -86,46 +89,52 @@ module.exports = function( options ) {
 
   /// "cmd_save_settings"
   function cmd_save_settings( args, done ) {
-    settingsent.load$({kind:'user',user:args.user.id}, function( err, settings ){
+    settingsent.load$( {kind:args.kind, ref:args.ref}, function( err, settings ) {
       if( err ) return done(err);
       
       if( !settings ) {
-        settings = settingsent.make$({kind:'user',user:args.user.id})
+        settings = settingsent.make$( {kind:args.kind, ref:args.ref} )
       }
       
-      settings.data = _.extend( options.default_data, settings.data, args.data )
+      settings.settings = _.extend( {}, options.default_data, settings.settings, args.settings )
+
       settings.save$( function(err, out){
         if( err ) return done(err);
-        done( null, { ok:true, settings: out.data } )
+        done( null, { ok:true, settings: out.settings } )
       })
     })
   }
 
+
   var valid_setting_types = {
-      "text" : "Single line text.",
-      "email" : "Email address.",
-      "tel" : "Phone number.",
-      "number" : "Small numeric value.",
-      "time" : "Time.",
-      "date" : "Date.",
-      "datetime" : "Date with time.",
-      "color" : "Color.",
-      "url" : "A url.",
-      "checkbox" : "A checkbox.",
-      "range" : "Range/slider.",
+    "rating" : "Star rating.",
+    "yesno" : "Yes or no buttons.",
+    "onoff" : "An on/off slider.",
+    "text" : "Single line text.",
+    "email" : "Email address.",
+    "tel" : "Phone number.",
+    "number" : "Small numeric value.",
+    "time" : "Time.",
+    "date" : "Date.",
+    "datetime" : "Date with time.",
+    "color" : "Color.",
+    "url" : "A url.",
+    "range" : "Range/slider.",
+    
 
-      "rating" : "Star rating.",
-      "yesno" : "Yes or no buttons.",
-      "onoff" : "An on/off slider.",
+    "checkbox" : "A checkbox.",
+    
+    "buttons" : "Pre-defined selection, chosen by buttons.",
+    "dropdown" : "Pre-defined selection, chosen by drop-down.",
+    "dropdownplus" : "Pre-defined selection, chosen by drop-down, with option for user-provided text.",
+    
+    "longtext" : "Multi line text.",
 
-      "selectbuttons" : "Pre-defined selection, chosen by buttons.",
-      "selectdropdown" : "Pre-defined selection, chosen by drop-down.",
-      "selectdropdownplus" : "Pre-defined selection, chosen by drop-down, with option for user-provided text.",
-
-      "longtext" : "Multi line text."
+    "radio" : "A set of radio buttons.",
   }
 
 
+  // FIX: needs to use seneca.fail and callbacks
   function validate_spec(spec) {
     for (var spec_name in spec) {
       var spec_type = spec[spec_name]['type'];
@@ -148,7 +157,7 @@ module.exports = function( options ) {
         settings = settingsent.make$( {kind:'spec',spec:args.kind,data:args.spec} )
       }
       else {
-        settings.data = _.extend( settings.data, args.spec ) 
+        settings.data = _.extend( {}, settings.data, args.spec ) 
       }
 
       settings.save$( function(err,settings){
@@ -157,6 +166,7 @@ module.exports = function( options ) {
       })
     })
   }
+
 
   /// "cmd_spec"
   function cmd_spec( args, done ) {
@@ -168,11 +178,21 @@ module.exports = function( options ) {
     })
   }
 
+
   /// "buildcontext"
   function buildcontext( req, res, args, act, respond ) {
+    var kind = args.kind || 'user' // defaults to user settings
+
     var user = req.seneca && req.seneca.user
     if( user ) {
-      args.user = user
+      if( 'account' == args.kind ) {
+        args.ref = args.account || user.accounts[0]
+      }
+      else args.ref = user.id;
+    }
+
+    if( args.data ) {
+      args.settings = args.data
     }
 
     act(args,respond)
