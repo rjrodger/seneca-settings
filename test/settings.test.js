@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2013 Richard Rodger */
+/* Copyright (c) 2013-2014 Richard Rodger */
 "use strict";
 
 // mocha settings.test.js
@@ -45,7 +45,7 @@ describe('settings', function() {
     async.series({
       register_users: function(cb){
         userpin.register({name:'N1',nick:'n1'},cberr(function(out){
-          tmp.n1 = out.user
+          tmp.n1 = out.user.id
           cb()
         }))
       },

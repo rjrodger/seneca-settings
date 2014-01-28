@@ -1,6 +1,6 @@
 {
   "name": "seneca-settings",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "User settings plugin for Seneca",
   "main": "settings.js",
   "scripts": {
@@ -23,15 +23,19 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "underscore": "~1.5.2",
-    "async": "~0.2.9",
-    "connect": "~2.9.0"
+    "underscore": "1.5.x",
+    "async": "0.2.x",
+    "connect": "2.12.x"
+  },
+  "peerDependencies": {
+    "seneca": "*",
+    "seneca-user": "*"
   },
   "devDependencies": {
-    "mocha": "~1.13.0",
-    "chai": "~1.8.0",
-    "seneca": "~0.5.12",
-    "seneca-user": "~0.2.6"
+    "mocha": "1.17.x",
+    "chai": "1.8.x",
+    "seneca": "0.5.x",
+    "seneca-user": "0.2.x"
   },
   "files": [
     "README.md",

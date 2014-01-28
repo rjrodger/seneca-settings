@@ -5,7 +5,6 @@
 
   senecaSettingsModule.service('senecaSettingsAPI', ['$http',function($http){
     return {
-      foo: function(){ return 'bar'; },
       /// "spec"
       spec: function(kind,done){
         $http({method:'GET',url:'/settings/spec?kind='+kind, cache:false})
