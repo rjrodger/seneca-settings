@@ -33,25 +33,47 @@ module.exports = function( options ) {
   var userent     = seneca.make$( 'sys/user' )
 
 
-  /// "load-command"
-  seneca.add( {role:plugin, cmd:'load'},     
-              {required$:['ref','kind'], kind:{string$:true}},
-              cmd_load_settings )
+  // "load-command"
+  seneca.add({
+    role:plugin, 
+    cmd:'load',
 
-  /// "save-command"
-  seneca.add( {role:plugin, cmd:'save'},     
-              {required$:['ref','kind'], kind:{string$:true}},
-              cmd_save_settings )
+    ref:{required$:true},
+    kind:{required$:true,string$:true},
 
-  /// "define-spec-command"
-  seneca.add( {role:plugin, cmd:'define_spec'},     
-              {required$:['kind'], kind:{string$:true}},
-              cmd_define_spec )
+  }, cmd_load_settings )
 
-  /// "spec-command"
-  seneca.add( {role:plugin, cmd:'spec'},     
-              {required$:['kind'], kind:{string$:true}},
-              cmd_spec )
+
+  // "save-command"
+  seneca.add({
+    role:plugin, 
+    cmd:'save',
+
+    ref:{required$:true},
+    kind:{required$:true,string$:true},
+
+  }, cmd_save_settings )
+
+
+  // "define-spec-command"
+  seneca.add({
+    role:plugin, 
+    cmd:'define_spec',
+     
+    kind: {required$:true}
+
+  }, cmd_define_spec )
+
+
+  // "spec-command"
+  seneca.add({
+    role:plugin, 
+    cmd:'spec',
+    
+    kind: {required$:true}
+
+  }, cmd_spec )
+
 
   /// "resolve-args"
   seneca.act({
