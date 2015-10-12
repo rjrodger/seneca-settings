@@ -11,7 +11,7 @@ have any questions! :) [@rjrodger](http://twitter.com/rjrodger)
 
 Current Version: 0.1.4
 
-Tested on: Node 0.10.24, Seneca 0.5.16
+Tested on: Node 0.10, 0.12, 4, Seneca 0.7.2
 
 [![Build Status](https://travis-ci.org/rjrodger/seneca-settings.png?branch=master)](https://travis-ci.org/rjrodger/seneca-settings)
 
