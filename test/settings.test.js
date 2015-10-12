@@ -100,4 +100,16 @@ describe('settings', function () {
       }
     }, done)
   })
+
+  it('fail when define-spec with bad type', function (done) {
+    settingspin.define_spec({kind: 'foo', spec: {q: {type: 'numberOrString'}}}, function (err, out) {
+      assert.isNull(err)
+      assert.isNotNull(out)
+      assert.notOk(out.ok)
+      assert.isNotNull(out.err)
+      assert.isNotNull(out.err.code)
+      assert.equal(out.err.code, "invalid type 'numberOrString' for setting q")
+      done()
+    })
+  })
 })
